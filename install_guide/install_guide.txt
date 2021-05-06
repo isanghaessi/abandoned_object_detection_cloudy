@@ -1,0 +1,42 @@
+[cuda@11.3]
+$ sudo ubuntu-drivers autoinstall
+$ sudo reboot
+$ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+$ sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
+$ sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
+$ sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+$ sudo apt-get update
+$ sudo apt-get -y install cuda
+$ export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}} -> ~/.bashrc에 추가
+
+[cudnn@8.2.0]
+ - nvidia cudnn download에서 cuda 11.*와 대응되는 8.2.0 다운로드
+ - cuDNN Library for Linus [x86_64]
+$ tar -xzf cudnn-11.3-linux-x64-v8.2.0.53
+$ sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+$ sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+$ sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+
+[cmake@3.20]
+$ sudo apt-get install libssl-dev
+$ wget https://cmake.org/files/v3.20/cmake-3.20.2.tar.gz
+$ tar zxf cmake-3.20.2.tar.gz
+$ cd cmake-3.20.2
+$ ./bootstrap && make && sudo make install
+
+[opencv@latest]
+$ sudo apt install libopencv-dev
+
+[darknet@yolov4]
+ - yolov4.weights 검색하여 다운로드
+$ cp ./yolov4.weights ../darknet/cfg/yolov4.weights
+$ cp ./Makefile ../darknet/Makefile
+$ cd ../darknet && make
+
+------------------------------
+
+[test]
+./darknet detector test cfg/coco.data cfg/yolov4.cfg cfg/yolov4.weights -ext_output dog.jpg
+	-> predictions.jpg에서 인식 제대로 되는지 확인
+./darknet detector demo cfg/coco.data cfg/yolov4.cfg cfg/yolov4.weights -c 0
+	-> 캠으로 영상 인식 제대로 되는지 확인

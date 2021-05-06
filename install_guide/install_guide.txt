@@ -12,7 +12,7 @@ $ export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}} -> ~/.bashrc에 추가
 [cudnn@8.2.0]
  - nvidia cudnn download에서 cuda 11.*와 대응되는 8.2.0 다운로드
  - cuDNN Library for Linus [x86_64]
-$ tar -xzf cudnn-11.3-linux-x64-v8.2.0.53
+$ tar -xzf cudnn-11.3-linux-x64-v8.2.0.53.tgz
 $ sudo cp cuda/include/cudnn.h /usr/local/cuda/include
 $ sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
 $ sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*

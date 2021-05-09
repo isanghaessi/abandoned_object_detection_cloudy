@@ -1,4 +1,5 @@
 [cuda@11.3]
+$ sudo apt purge *nvidia*
 $ sudo ubuntu-drivers autoinstall
 $ sudo reboot
 $ wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
@@ -7,15 +8,16 @@ $ sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cu
 $ sudo add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
 $ sudo apt-get update
 $ sudo apt-get -y install cuda
-$ export PATH=/usr/local/cuda-11.3/bin${PATH:+:${PATH}} -> ~/.bashrc에 추가
+$ export PATH=/usr/local/cuda/bin:$PATH	-->> ~/.bashrc에 추가
 
 [cudnn@8.2.0]
  - nvidia cudnn download에서 cuda 11.*와 대응되는 8.2.0 다운로드
  - cuDNN Library for Linus [x86_64]
 $ tar -xzf cudnn-11.3-linux-x64-v8.2.0.53.tgz
-$ sudo cp cuda/include/cudnn.h /usr/local/cuda/include
-$ sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
-$ sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+$ sudo cp -d cuda/include/cudnn* /usr/local/cuda/include
+$ sudo cp -d cuda/lib64/libcudnn* /usr/local/cuda/lib64
+$ sudo chmod a+r /usr/local/cuda/include/cudnn* /usr/local/cuda/lib64/libcudnn*
+$ export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH	-->> ~/.bashrc에 추가
 
 [cmake@3.20]
 $ sudo apt-get install libssl-dev
@@ -26,6 +28,10 @@ $ ./bootstrap && make && sudo make install
 
 [opencv@latest]
 $ sudo apt install libopencv-dev
+
+[darknet]
+$ cd ..
+$ git clone https://github.com/AlexeyAB/darknet.git
 
 [darknet@yolov4]
  - yolov4.weights 검색하여 다운로드

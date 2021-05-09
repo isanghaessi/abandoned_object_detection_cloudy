@@ -1,0 +1,5 @@
+darknet/
+cuda/
+cmake-3.20.2/
+*.gz
+*.tgz

@@ -32,6 +32,7 @@ $ sudo apt install libopencv-dev
 [darknet]
 $ cd ..
 $ git clone https://github.com/AlexeyAB/darknet.git
+ - Makefile에서 gpu, cudnn, opencv 1로 바꿔줌
 
 [darknet@yolov4]
  - yolov4.weights 검색하여 다운로드

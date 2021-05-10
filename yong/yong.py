@@ -7,7 +7,8 @@ import darknet
 import argparse
 from threading import Thread, enumerate
 from queue import Queue
-import re
+import collections
+import numpy as np
 
 
 def parser():
@@ -146,7 +147,8 @@ def inference(darknet_image_queue, detections_queue, fps_queue):
             if my_prev_time == None or time.time() - my_prev_time > 3:
                 print('yong: recording...')
                 for t in temp:
-                    f.write(' '.join([str(d) for d in t]) + '\n')
+                    f.write(
+                        ''.join([str(d) + ':' for d in t]) + '\n')
                 temp.clear()
                 my_prev_time = time.time()
             else:
@@ -155,7 +157,7 @@ def inference(darknet_image_queue, detections_queue, fps_queue):
         fps = int(1/(time.time() - prev_time))
         fps_queue.put(fps)
         # print("FPS: {}".format(fps))
-        # darknet.print_detections(detections, args.ext_output)
+        # darknet.print_detections(detections, True)
         darknet.free_image(darknet_image)
     cap.release()
 
@@ -189,17 +191,72 @@ def drawing(frame_queue, detections_queue, fps_queue):
 
 
 def myTestFunction():
+    def checkAllIn():
+        all = []
+        for t in temp:
+            for _t in t.split(':'):
+                name = _t.split(',')[0].replace('\'', '').replace('(', '')
+                if name != '\n':
+                    temp_dict[name].append(_t)
+        for td in temp_dict:
+            print(len(temp), len(temp_dict[td]), td)
+            if len(temp_dict[td]) == len(temp):
+                all.append(td)
+        return all
+
+    def checkPair(person):
+        person = tuple(person)
+        pair = [person, []]
+        flag = True
+        for a in all:
+            if a != 'person':
+                for i in range(len(temp)):
+                    temp_person = [p.replace('\'', '').replace('(', '').replace(')', '').strip()
+                                   for p in person[i].split(',')]
+                    temp_person = [float(tp) if tp.replace('.', '').isdigit() else tp
+                                   for tp in temp_person]
+                    temp_other = [o.replace('\'', '').replace('(', '').replace(')', '').strip()
+                                  for o in temp_dict[a][i].split(',')]
+                    temp_other = [float(to) if to.replace('.', '').isdigit() else to
+                                  for to in temp_other]
+                    # print(temp_person)
+                    # print(type(temp_person))
+                    # print(temp_other)
+                    # print(type(temp_other))
+                    # print(np.sqrt(np.square(
+                    #     temp_person[2] - temp_other[2]) + np.square(temp_person[3] - temp_other[3])))
+                    # print((temp_person[4] + temp_person[5]) // 2 // 10)
+                    if np.sqrt(np.square(temp_person[2] - temp_other[2]) + np.square(temp_person[3] - temp_other[3])) \
+                            > (temp_person[4] + temp_person[5]) // 2:
+                        flag = False
+                if flag:
+                    pair[1].append(a)
+        return pair if len(pair[1]) > 0 else []
+
     my_prev_time = None
+    pairs = []
     while cap.isOpened():
         # yong, 2021.05.11
-        # 3초마다 기록된 정보를 test.txt에서 가져오고, 초기화
+        # 3초마다 기록된 정보를 test.txt에서 가져옴
         if my_prev_time == None or time.time() - my_prev_time > 3:
             with open('test.txt', 'r') as f:
                 print('yong: reading...')
                 temp = f.readlines()
-                print('items ->')
-                for t in temp:
-                    print(t.split(',')[0].replace('(', ''), end=' ')
+                temp_dict = collections.defaultdict(list)
+                all = checkAllIn()
+                # print('all ->', all)
+                people = []
+                for a in all:
+                    if a == 'person':
+                        people.append(temp_dict[a])
+                # print('people ->', people)
+                pairs = []
+                for p in people:
+                    pairs.append(checkPair(p))
+                print('pairs ->', pairs)
+                # print('items ->')
+                # for t in temp:
+                #     print(t.split(',')[0].replace('(', ''), end=' ')
                 my_prev_time = time.time()
             with open('test.txt', 'w') as f:
                 f.write('')
@@ -223,6 +280,8 @@ if __name__ == '__main__':
     darknet_height = darknet.network_height(network)
     input_path = str2int(args.input)
     cap = cv2.VideoCapture(input_path)
+    with open('test.txt', 'w') as f:
+        f.write('')
     Thread(target=video_capture, args=(
         frame_queue, darknet_image_queue)).start()
     Thread(target=inference, args=(darknet_image_queue,

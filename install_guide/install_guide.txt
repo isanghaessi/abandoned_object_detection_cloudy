@@ -27,7 +27,7 @@ $ cd cmake-3.20.2
 $ ./bootstrap && make && sudo make install
 
 [opencv@latest]
-$ sudo apt install libopencv-dev
+$ sudo apt install libopencv-dev python3-opencv
 
 [darknet]
 $ cd ..

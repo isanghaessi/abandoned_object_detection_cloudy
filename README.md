@@ -4,4 +4,4 @@
  - yolov4
 ------------------------------  
  - 3초동안 사람과 물건이 일정범우 내에 있다면 pair로 만듦
- - 시연 영상 youtube: https://youtu.be/4DMBkGBZPwc
+ - youtube: https://youtu.be/4DMBkGBZPwc
